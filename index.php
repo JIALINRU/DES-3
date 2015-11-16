@@ -102,8 +102,84 @@ $table_PC2 = [13, 16, 10, 23, 0, 4, 2, 27,
     50, 44, 32, 46, 43, 48, 38, 55,
     33, 52, 45, 41, 49, 35, 28, 31];
 
-//times of move to left:
-$table_move_times = [1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1];
+//steps of move to left:
+$table_move_steps = [1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1];
+
+//functions:
+//hex to binary:
+function HexToBin($input_data) {
+    $bin_data = [];
+    for ($i = 0; $i < count($input_data); $i++) {
+        $bin_data [$i] = base_convert($input_data[$i], 16, 2);
+        //add 0 in front of data:
+        if (strlen($bin_data [$i]) < 8) {
+            $num_of_zero = 8 - strlen($bin_data [$i]);
+            $bin_data[$i] = AddZero($bin_data[$i], $num_of_zero);
+        }
+    }
+    return $bin_data;
+}
+
+//bin to array:
+function BinToArray($bin_data) {
+    $data = [];
+    foreach ($bin_data as $bin_data_value) {
+        $temp = str_split($bin_data_value, 1);
+        foreach ($temp as $temp_value) {
+            array_push($data, $temp_value);
+        }
+    }
+    return $data;
+}
+
+//add 0 in front of data:
+function AddZero($string, $num) {
+    for ($j = 0; $j < $num; $j++) {
+        $string = "0" . $string;
+    }
+    return $string;
+}
+
+//deal with key:
+function getKs($key) {
+    //globals:
+    global $table_PC1, $table_PC2, $table_move_steps;
+    //use PC1 to get 56 long's array:
+    $key_after_PC1 = [];
+    for ($i = 0; $i < 56; $i++) {
+        $key_after_PC1[$i] = $key[$table_PC1[$i]];
+    }
+    //get 28 long's array C,D:
+    $key_C1 = [];
+    $key_C2 = [];
+    for ($i = 0; $i < 28; $i++) {
+        $key_C1[$i] = $key_after_PC1[$i];
+        $key_C2[$i] = $key_after_PC1[$i + 28];
+    }
+    //get 16 Ks:
+    $key_Ks = [];
+    for ($i = 0; $i < 16; $i++) {
+        $merge_C_D = array_merge(MoveLeft($key_C1, $table_move_steps[$i]), MoveLeft($key_C2, $table_move_steps[$i]));
+        //use PC2:
+        for ($j = 0; $j < 48; $j++) {
+            $key_Ks[$i][$j] = $merge_C_D[$table_PC2[$j]];
+        }
+    }
+    return $key_Ks;
+}
+
+//move left:
+function MoveLeft($array, $step) {
+    $new_array = [];
+    for ($i = 0; $i < count($array); $i++) {
+        $old_index = $i + $step;
+        if ($old_index > count($array) - 1) {
+            $old_index-=count($array);
+        }
+        $new_array[$i] = $array[$old_index];
+    }
+    return $new_array;
+}
 ?>
 <html>
     <head>
@@ -149,51 +225,17 @@ $table_move_times = [1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1];
                 $input_key = $_POST["key"];
             }
             if (count($input_data) !== 0 && count($input_key) !== 0) {
-                //hex to binary:
-                $bin_data = [];
-                $bin_key = [];
-                for ($i = 0; $i < count($input_data); $i++) {
-                    $bin_data [$i] = base_convert($input_data[$i], 16, 2);
-                    //add 0 in front of data:
-                    if (strlen($bin_data [$i]) < 8) {
-                        $num_of_zero = 8 - strlen($bin_data [$i]);
-                        for ($j = 0; $j < $num_of_zero; $j++) {
-                            $bin_data[$i] = "0" . $bin_data[$i];
-                        }
-                    }
-                }
-                echo "<br />";
-                for ($i = 0; $i < count($input_key); $i++) {
-                    $bin_key [$i] = base_convert($input_key[$i], 16, 2);
-                    //add 0 in front of key:
-                    if (strlen($bin_key [$i]) < 8) {
-                        $num_of_zero = 8 - strlen($bin_key [$i]);
-                        for ($j = 0; $j < $num_of_zero; $j++) {
-                            $bin_key[$i] = "0" . $bin_key[$i];
-                        }
-                    }
-                }
-
+                //8*8 datas and 8*8 keys:
+                $bin_data = HexToBin($input_data);
+                $bin_key = HexToBin($input_key);
                 //get 64 long's array:
-                //str_split(string , length)
-                $data = [];
-                $key = [];
-                foreach ($bin_data as $bin_data_value) {
-                    $temp = str_split($bin_data_value, 1);
-                    foreach ($temp as $temp_value) {
-                        array_push($data, $temp_value);
-                    }
-                }
-                foreach ($bin_key as $bin_key_value) {
-                    $temp = str_split($bin_key_value, 1);
-                    foreach ($temp as $temp_value) {
-                        array_push($key, $temp_value);
-                    }
-                }
-                
+                $data = BinToArray($bin_data);
+                $key = BinToArray($bin_key);
+                print_r($key);
                 //deal with key:
-                
-                
+                $key_Ks = getKs($key);
+
+                //deal with 64 data:
             }//end if
             ?>
         </div>
