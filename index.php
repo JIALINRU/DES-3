@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <?php
+include 'test.php';
 //init tables
 //IP:
 $table_IP = [57, 49, 41, 33, 25, 17, 9, 1,
@@ -40,44 +41,44 @@ $table_P = [15, 6, 19, 20, 28, 11, 27, 16,
 
 //S:
 $box_S = [
-    //S1:
+    //S0:
     [[14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7],
         [0, 15, 7, 4, 14, 2, 13, 1, 10, 6, 12, 11, 9, 5, 3, 8],
         [4, 1, 14, 8, 13, 6, 2, 11, 15, 12, 9, 7, 3, 10, 5, 0],
         [15, 12, 8, 2, 4, 9, 1, 7, 5, 11, 3, 14, 10, 0, 6, 13]
     ],
-    //S2:
+    //S1:
     [[15, 1, 8, 14, 6, 11, 3, 4, 9, 7, 2, 13, 12, 0, 5, 10],
         [3, 13, 4, 7, 15, 2, 8, 14, 12, 0, 1, 10, 6, 9, 11, 5],
         [0, 14, 7, 11, 10, 4, 13, 1, 5, 8, 12, 6, 9, 3, 2, 15],
         [13, 8, 10, 1, 3, 15, 4, 2, 11, 6, 7, 12, 0, 5, 14, 9]
     ],
-    //S3:
+    //S2:
     [[10, 0, 9, 14, 6, 3, 15, 5, 1, 13, 12, 7, 11, 4, 2, 8],
         [13, 7, 0, 9, 3, 4, 6, 10, 2, 8, 5, 14, 12, 11, 15, 1],
         [13, 6, 4, 9, 8, 15, 3, 0, 11, 1, 2, 12, 5, 10, 14, 7],
         [1, 10, 13, 0, 6, 9, 8, 7, 4, 15, 14, 3, 11, 5, 2, 12]],
-    //S4:
+    //S3:
     [[7, 13, 14, 3, 0, 6, 9, 10, 1, 2, 8, 5, 11, 12, 4, 15],
         [13, 8, 11, 5, 6, 15, 0, 3, 4, 7, 2, 12, 1, 10, 14, 9],
         [10, 6, 9, 0, 12, 11, 7, 13, 15, 1, 3, 14, 5, 2, 8, 4],
         [3, 15, 0, 6, 10, 1, 13, 8, 9, 4, 5, 11, 12, 7, 2, 14]],
-    //S5:
+    //S4:
     [[2, 12, 4, 1, 7, 10, 11, 6, 8, 5, 3, 15, 13, 0, 14, 9],
         [14, 11, 2, 12, 4, 7, 13, 1, 5, 0, 15, 10, 3, 9, 8, 6],
         [4, 2, 1, 11, 10, 13, 7, 8, 15, 9, 12, 5, 6, 3, 0, 14],
         [11, 8, 12, 7, 1, 14, 2, 13, 6, 15, 0, 9, 10, 4, 5, 3]],
-    //S6:
+    //S5:
     [[12, 1, 10, 15, 9, 2, 6, 8, 0, 13, 3, 4, 14, 7, 5, 11],
         [10, 15, 4, 2, 7, 12, 9, 5, 6, 1, 13, 14, 0, 11, 3, 8],
         [9, 14, 15, 5, 2, 8, 12, 3, 7, 0, 4, 10, 1, 13, 11, 6],
         [4, 3, 2, 12, 9, 5, 15, 10, 11, 14, 1, 7, 6, 0, 8, 13]],
-    //S7:
+    //S6:
     [[4, 11, 2, 14, 15, 0, 8, 13, 3, 12, 9, 7, 5, 10, 6, 1],
         [13, 0, 11, 7, 4, 9, 1, 10, 14, 3, 5, 12, 2, 15, 8, 6],
         [1, 4, 11, 13, 12, 3, 7, 14, 10, 15, 6, 8, 0, 5, 9, 2],
         [6, 11, 13, 8, 1, 4, 10, 7, 9, 5, 0, 15, 14, 2, 3, 12]],
-    //S8:
+    //S7:
     [[13, 2, 8, 4, 6, 15, 11, 1, 10, 9, 3, 14, 5, 0, 12, 7],
         [1, 15, 13, 8, 10, 3, 7, 4, 12, 5, 6, 11, 0, 14, 9, 2],
         [7, 11, 4, 1, 9, 12, 14, 2, 0, 6, 10, 13, 15, 3, 5, 8],
@@ -107,7 +108,7 @@ $table_move_steps = [1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1];
 
 //functions:
 //hex to binary:
-function HexToBin($input_data) {
+function HexToBin($input_data) {//input an array
     $bin_data = [];
     for ($i = 0; $i < count($input_data); $i++) {
         $bin_data [$i] = base_convert($input_data[$i], 16, 2);
@@ -120,16 +121,35 @@ function HexToBin($input_data) {
     return $bin_data;
 }
 
+//dec to bin:
+function DecToBin($input_data) {//input a data
+    $bin_data = base_convert($input_data, 10, 2);
+    //add 0 in front of data:
+    if (strlen($bin_data) < 4) {
+        $num_of_zero = 4 - strlen($bin_data);
+        $bin_data = AddZero($bin_data, $num_of_zero);
+    }
+    return $bin_data;
+}
+
 //bin to array:
 function BinToArray($bin_data) {
     $data = [];
-    foreach ($bin_data as $bin_data_value) {
-        $temp = str_split($bin_data_value, 1);
+    if (!is_array($bin_data)) {
+        $temp = str_split($bin_data, 1);
         foreach ($temp as $temp_value) {
             array_push($data, $temp_value);
         }
+        return $data;
+    } else {
+        foreach ($bin_data as $bin_data_value) {
+            $temp = str_split($bin_data_value, 1);
+            foreach ($temp as $temp_value) {
+                array_push($data, $temp_value);
+            }
+        }
+        return $data;
     }
-    return $data;
 }
 
 //add 0 in front of data:
@@ -169,7 +189,7 @@ function getKs($key) {
 }
 
 //move left:
-function MoveLeft($array, $step) {
+function MoveLeft(&$array, $step) {
     $new_array = [];
     for ($i = 0; $i < count($array); $i++) {
         $old_index = $i + $step;
@@ -178,7 +198,104 @@ function MoveLeft($array, $step) {
         }
         $new_array[$i] = $array[$old_index];
     }
+    $array = $new_array;
     return $new_array;
+}
+
+//deal with data:
+function Encrypt($data, $key_Ks) {
+    //globals:
+    global $table_IP, $table_IP_1;
+    //use IP:
+    $data_after_IP = [];
+    for ($i = 0; $i < 64; $i++) {
+        $data_after_IP[$i] = $data[$table_IP[$i]];
+    }
+    //get L,R:
+    $data_L = [];
+    $data_R = [];
+    for ($i = 0; $i < 32; $i++) {
+        $data_L[$i] = $data_after_IP[$i];
+        $data_R[$i] = $data_after_IP[$i + 32];
+    }
+    foreach ($key_Ks as $key_Ks_value) {
+        ChangeDataByKeys($data_L, $data_R, $key_Ks_value);
+        test($data_L);
+        test($data_R);
+        echo "<br />";
+    }
+
+    //combine R and L by IP^-1
+    $data_before_IP_1 = [];
+    foreach ($data_R as $value) {
+        array_push($data_before_IP_1, $value);
+    }
+    foreach ($data_L as $value) {
+        array_push($data_before_IP_1, $value);
+    }
+    $enc_data = []; //data after IP^-1
+    for ($i = 0; $i < count($table_IP_1); $i++) {
+        $enc_data[$i] = $data_before_IP_1[$table_IP_1[$i]];
+    }
+    return $enc_data;
+}
+
+//use 16 key_Ks change data:
+function ChangeDataByKeys(&$data_L, &$data_R, $key) {
+    global $table_E, $table_P;
+    //use E to expand R:
+    $data_R_after_E = [];
+    for ($i = 0; $i < 48; $i++) {
+        $data_R_after_E[$i] = $data_R[$table_E[$i]];
+    }
+    //E xor K:
+    $temp_R = [];
+    for ($i = 0; $i < 48; $i++) {
+        $temp_R[$i] = $data_R_after_E[$i] xor $key[$i];
+    }
+    //get 8 Bs:
+    $temp_B = [[]];
+    for ($i = 0; $i < 8; $i++) {
+        for ($j = 0; $j < 6; $j++) {
+            $temp_B[$i][$j] = $temp_R[$i * 6 + $j];
+        }
+    }
+    //use S to change B:
+    S_box($temp_B);
+    //combine B0~7,and use P:
+    $new_temp_B = [];
+    foreach ($temp_B as $temp_B_j) {
+        foreach ($temp_B_j as $temp_B_j_value) {
+            array_push($new_temp_B, $temp_B_j_value);
+        }
+    }
+    $temp_P = [];
+    for ($i = 0; $i < count($table_P[$i]); $i++) {
+        $temp_P[$i] = $new_temp_B[$table_P[$i]];
+    }
+
+    //R[I]=P XOR L[I-1]:
+    //using temps to store R[I-1]
+    //!!!!!!!!!!!!再看哈引用
+    $temp_R_for_L = $data_R;
+    //xor:
+    for ($i = 0; $i < count($temp_P); $i++) {
+        $data_R[$i] = $temp_P[$i] xor $data_L[$i];
+    }
+
+    //L[I]=R[I-1] :
+    $data_L = $temp_R_for_L;
+}
+
+//S box change B:
+function S_box(&$temp_B) {
+    global $box_S;
+    $m = $n = 0;
+    for ($j = 0; $j < 8; $j++) {
+        $m = $temp_B[$j][0] * 2 + $temp_B[$j][5];
+        $n = $temp_B[$j][1] * 2 * 2 * 2 + $temp_B[$j][2] * 2 * 2 + $temp_B[$j][3] * 2 + $temp_B[$j][4];
+        $temp_B[$j] = BinToArray(DecToBin($box_S[$j][$m][$n]));
+    }
 }
 ?>
 <html>
@@ -218,7 +335,7 @@ function MoveLeft($array, $step) {
         <!--result-->
         <div>
             <?php
-            //handle the input:
+//handle the input:
             $input_data = $input_key = [];
             if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $input_data = $_POST["data"];
@@ -231,11 +348,15 @@ function MoveLeft($array, $step) {
                 //get 64 long's array:
                 $data = BinToArray($bin_data);
                 $key = BinToArray($bin_key);
-                print_r($key);
                 //deal with key:
                 $key_Ks = getKs($key);
 
-                //deal with 64 data:
+                //get 64 bit encrypted data:
+                $enc_data = Encrypt($data, $key_Ks);
+                echo "<br />";
+                echo "result:<br />";
+                test($enc_data);
+                //64 to 8*8 and bin to hex:
             }//end if
             ?>
         </div>
