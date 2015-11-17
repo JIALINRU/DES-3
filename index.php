@@ -220,9 +220,6 @@ function Encrypt($data, $key_Ks) {
     }
     foreach ($key_Ks as $key_Ks_value) {
         ChangeDataByKeys($data_L, $data_R, $key_Ks_value);
-        test($data_L);
-        test($data_R);
-        echo "<br />";
     }
 
     //combine R and L by IP^-1
@@ -233,6 +230,7 @@ function Encrypt($data, $key_Ks) {
     foreach ($data_L as $value) {
         array_push($data_before_IP_1, $value);
     }
+    
     $enc_data = []; //data after IP^-1
     for ($i = 0; $i < count($table_IP_1); $i++) {
         $enc_data[$i] = $data_before_IP_1[$table_IP_1[$i]];
@@ -269,14 +267,14 @@ function ChangeDataByKeys(&$data_L, &$data_R, $key) {
             array_push($new_temp_B, $temp_B_j_value);
         }
     }
+
     $temp_P = [];
-    for ($i = 0; $i < count($table_P[$i]); $i++) {
+    for ($i = 0; $i < count($table_P); $i++) {
         $temp_P[$i] = $new_temp_B[$table_P[$i]];
     }
 
     //R[I]=P XOR L[I-1]:
     //using temps to store R[I-1]
-    //!!!!!!!!!!!!再看哈引用
     $temp_R_for_L = $data_R;
     //xor:
     for ($i = 0; $i < count($temp_P); $i++) {
