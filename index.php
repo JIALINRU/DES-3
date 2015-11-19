@@ -100,7 +100,7 @@ $table_PC2 = [13, 16, 10, 23, 0, 4, 2, 27,
     14, 5, 20, 9, 22, 18, 11, 3,
     25, 7, 15, 6, 26, 19, 12, 1,
     40, 51, 30, 36, 46, 54, 29, 39,
-    50, 44, 32, 46, 43, 48, 38, 55,
+    50, 44, 32, 47, 43, 48, 38, 55,
     33, 52, 45, 41, 49, 35, 28, 31];
 
 //steps of move to left:
@@ -170,16 +170,16 @@ function getKs($key) {
         $key_after_PC1[$i] = $key[$table_PC1[$i]];
     }
     //get 28 long's array C,D:
-    $key_C1 = [];
-    $key_C2 = [];
+    $key_C = [];
+    $key_D = [];
     for ($i = 0; $i < 28; $i++) {
-        $key_C1[$i] = $key_after_PC1[$i];
-        $key_C2[$i] = $key_after_PC1[$i + 28];
+        $key_C[$i] = $key_after_PC1[$i];
+        $key_D[$i] = $key_after_PC1[$i + 28];
     }
     //get 16 Ks:
     $key_Ks = [];
     for ($i = 0; $i < 16; $i++) {
-        $merge_C_D = array_merge(MoveLeft($key_C1, $table_move_steps[$i]), MoveLeft($key_C2, $table_move_steps[$i]));
+        $merge_C_D = array_merge(MoveLeft($key_C, $table_move_steps[$i]), MoveLeft($key_D, $table_move_steps[$i]));
         //use PC2:
         for ($j = 0; $j < 48; $j++) {
             $key_Ks[$i][$j] = $merge_C_D[$table_PC2[$j]];
@@ -230,7 +230,7 @@ function Encrypt($data, $key_Ks) {
     foreach ($data_L as $value) {
         array_push($data_before_IP_1, $value);
     }
-    
+
     $enc_data = []; //data after IP^-1
     for ($i = 0; $i < count($table_IP_1); $i++) {
         $enc_data[$i] = $data_before_IP_1[$table_IP_1[$i]];
@@ -285,6 +285,25 @@ function ChangeDataByKeys(&$data_L, &$data_R, $key) {
     $data_L = $temp_R_for_L;
 }
 
+function ArrayToDec($data) {//64 to 8 dec numbers
+    $dec_data = [];
+    for ($i = 0; $i < 8; $i++) {
+        $dec_data[$i] = 0;
+        for ($j = 0; $j < 8; $j++) {
+            $dec_data[$i] += $data[$i * 8 + $j]*  pow(2,7-$j );
+        }
+    }
+    return $dec_data;
+}
+
+function DecToHex($data) {
+    $hex_data = [];
+    for ($i = 0; $i < count($data); $i++) {
+        $hex_data[$i] = base_convert($data[$i], 10, 16);
+    }
+    return $hex_data;
+}
+
 //S box change B:
 function S_box(&$temp_B) {
     global $box_S;
@@ -306,25 +325,25 @@ function S_box(&$temp_B) {
         <div>
             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                 <lable>Input data:<br />
-                    0x<input name="data[]" type="text" size="4" value="31" />
-                    0x<input name="data[]" type="text" size="4" value="31" />
-                    0x<input name="data[]" type="text" size="4" value="31" />
-                    0x<input name="data[]" type="text" size="4" value="31" />
-                    0x<input name="data[]" type="text" size="4" value="31" />
-                    0x<input name="data[]" type="text" size="4" value="31" />
-                    0x<input name="data[]" type="text" size="4" value="31" />
-                    0x<input name="data[]" type="text" size="4" value="31" />
+                    0x<input name="data[]" type="text" size="4" />
+                    0x<input name="data[]" type="text" size="4" />
+                    0x<input name="data[]" type="text" size="4" />
+                    0x<input name="data[]" type="text" size="4" />
+                    0x<input name="data[]" type="text" size="4" />
+                    0x<input name="data[]" type="text" size="4" />
+                    0x<input name="data[]" type="text" size="4" />
+                    0x<input name="data[]" type="text" size="4" />
                 </lable>
                 <br />
                 <label>Input key:<br />
-                    0x<input name="key[]" type="text" size="4" value="30" />
-                    0x<input name="key[]" type="text" size="4" value="30" />
-                    0x<input name="key[]" type="text" size="4" value="30" />
-                    0x<input name="key[]" type="text" size="4" value="30" />
-                    0x<input name="key[]" type="text" size="4" value="30" />
-                    0x<input name="key[]" type="text" size="4" value="30" />
-                    0x<input name="key[]" type="text" size="4" value="30" />
-                    0x<input name="key[]" type="text" size="4" value="30" />
+                    0x<input name="key[]" type="text" size="4" />
+                    0x<input name="key[]" type="text" size="4" />
+                    0x<input name="key[]" type="text" size="4" />
+                    0x<input name="key[]" type="text" size="4" />
+                    0x<input name="key[]" type="text" size="4" />
+                    0x<input name="key[]" type="text" size="4" />
+                    0x<input name="key[]" type="text" size="4" />
+                    0x<input name="key[]" type="text" size="4" />
                 </label>
                 <br />
                 <input type="submit" value="加密" />
@@ -340,6 +359,10 @@ function S_box(&$temp_B) {
                 $input_key = $_POST["key"];
             }
             if (count($input_data) !== 0 && count($input_key) !== 0) {
+                echo "input data:<br />";
+                test($input_data);
+                echo "input key:<br />";
+                test($input_key);
                 //8*8 datas and 8*8 keys:
                 $bin_data = HexToBin($input_data);
                 $bin_key = HexToBin($input_key);
@@ -351,10 +374,13 @@ function S_box(&$temp_B) {
 
                 //get 64 bit encrypted data:
                 $enc_data = Encrypt($data, $key_Ks);
+
+                //64 to dec and dec to hex:
+                $enc_dec_data = ArrayToDec($enc_data);
+                $enc_hex_data = DecToHex($enc_dec_data);
                 echo "<br />";
                 echo "result:<br />";
-                test($enc_data);
-                //64 to 8*8 and bin to hex:
+                test($enc_hex_data);
             }//end if
             ?>
         </div>
