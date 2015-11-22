@@ -251,7 +251,7 @@ function Decrypt($data, $key_Ks) {
     $data_R = [];
     for ($i = 0; $i < 32; $i++) {
         $data_L[$i] = $data_after_IP[$i];
-        $data_R[$i] = $data_after_IP[$i+32];
+        $data_R[$i] = $data_after_IP[$i + 32];
     }
     for ($i = 15; $i >= 0; $i--) {
         ChangeDataByKeys($data_L, $data_R, $key_Ks[$i]);
@@ -284,7 +284,7 @@ function ChangeDataByKeys(&$data_L, &$data_R, $key) {
     //E xor K:
     $temp_R = [];
     for ($i = 0; $i < 48; $i++) {
-        $temp_R[$i] = $data_R_after_E[$i] xor $key[$i];
+        $temp_R[$i] = AxorB($data_R_after_E[$i], $key[$i]);
     }
     //get 8 Bs:
     $temp_B = [[]];
@@ -313,11 +313,31 @@ function ChangeDataByKeys(&$data_L, &$data_R, $key) {
     $temp_R_for_L = $data_R;
     //xor:
     for ($i = 0; $i < count($temp_P); $i++) {
-        $data_R[$i] = $temp_P[$i] xor $data_L[$i];
+        $data_R[$i] = AxorB($temp_P[$i], $data_L[$i]);
     }
 
     //L[I]=R[I-1] :
     $data_L = $temp_R_for_L;
+}
+
+//xor:
+function AxorB($a, $b) {
+    $result = 0;
+    if ($a == 0 && $b == 0) {
+        $result = 0;
+        return $result;
+    } elseif ($a == 1 && $b == 1) {
+        $result = 0;
+        return $result;
+    } elseif ($a == 1 && $b == 0) {
+        $result = 1;
+        return $result;
+    } elseif ($a == 0 && $b == 1) {
+        $result = 1;
+        return $result;
+    } else {
+        echo "wrong at xor!";
+    }
 }
 
 function ArrayToDec($data) {//64 to 8 dec numbers
