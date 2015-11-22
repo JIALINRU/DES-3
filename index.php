@@ -218,8 +218,8 @@ function Encrypt($data, $key_Ks) {
         $data_L[$i] = $data_after_IP[$i];
         $data_R[$i] = $data_after_IP[$i + 32];
     }
-    foreach ($key_Ks as $key_Ks_value) {
-        ChangeDataByKeys($data_L, $data_R, $key_Ks_value);
+    for ($i = 0; $i < 16; $i++) {
+        ChangeDataByKeys($data_L, $data_R, $key_Ks[$i]);
     }
 
     //combine R and L by IP^-1
@@ -236,6 +236,41 @@ function Encrypt($data, $key_Ks) {
         $enc_data[$i] = $data_before_IP_1[$table_IP_1[$i]];
     }
     return $enc_data;
+}
+
+function Decrypt($data, $key_Ks) {
+    //globals:
+    global $table_IP, $table_IP_1;
+    //use IP:
+    $data_after_IP = [];
+    for ($i = 0; $i < 64; $i++) {
+        $data_after_IP[$i] = $data[$table_IP[$i]];
+    }
+    //get L,R:
+    $data_L = [];
+    $data_R = [];
+    for ($i = 0; $i < 32; $i++) {
+        $data_L[$i] = $data_after_IP[$i];
+        $data_R[$i] = $data_after_IP[$i+32];
+    }
+    for ($i = 15; $i >= 0; $i--) {
+        ChangeDataByKeys($data_L, $data_R, $key_Ks[$i]);
+    }
+
+    //combine R and L by IP^-1
+    $data_before_IP_1 = [];
+    foreach ($data_R as $value) {
+        array_push($data_before_IP_1, $value);
+    }
+    foreach ($data_L as $value) {
+        array_push($data_before_IP_1, $value);
+    }
+
+    $dec_data = []; //data after IP^-1
+    for ($i = 0; $i < count($table_IP_1); $i++) {
+        $dec_data[$i] = $data_before_IP_1[$table_IP_1[$i]];
+    }
+    return $dec_data;
 }
 
 //use 16 key_Ks change data:
@@ -290,7 +325,7 @@ function ArrayToDec($data) {//64 to 8 dec numbers
     for ($i = 0; $i < 8; $i++) {
         $dec_data[$i] = 0;
         for ($j = 0; $j < 8; $j++) {
-            $dec_data[$i] += $data[$i * 8 + $j]*  pow(2,7-$j );
+            $dec_data[$i] += $data[$i * 8 + $j] * pow(2, 7 - $j);
         }
     }
     return $dec_data;
@@ -300,6 +335,10 @@ function DecToHex($data) {
     $hex_data = [];
     for ($i = 0; $i < count($data); $i++) {
         $hex_data[$i] = base_convert($data[$i], 10, 16);
+        if (strlen($hex_data[$i]) < 2) {
+            $num_of_zero = 2 - strlen($hex_data[$i]);
+            $hex_data[$i] = AddZero($hex_data[$i], $num_of_zero);
+        }
     }
     return $hex_data;
 }
@@ -315,6 +354,8 @@ function S_box(&$temp_B) {
     }
 }
 ?>
+
+<!--html-->
 <html>
     <head>
         <meta charset="UTF-8">
@@ -346,23 +387,30 @@ function S_box(&$temp_B) {
                     0x<input name="key[]" type="text" size="4" />
                 </label>
                 <br />
-                <input type="submit" value="加密" />
+                <label><select name="mode">
+                        <option value="encrypt">加密</option>
+                        <option value="decrypt">解密</option>
+                    </select>
+                </label>
+                <br />
+                <input type="submit" value="提交" />
             </form></div>
         <br />
         <!--result-->
         <div>
             <?php
-//handle the input:
+            //handle the input:
             $input_data = $input_key = [];
             if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $input_data = $_POST["data"];
                 $input_key = $_POST["key"];
+                $mode = $_POST["mode"];
             }
             if (count($input_data) !== 0 && count($input_key) !== 0) {
                 echo "input data:<br />";
-                test($input_data);
+                test($input_data, 1);
                 echo "input key:<br />";
-                test($input_key);
+                test($input_key, 1);
                 //8*8 datas and 8*8 keys:
                 $bin_data = HexToBin($input_data);
                 $bin_key = HexToBin($input_key);
@@ -372,15 +420,25 @@ function S_box(&$temp_B) {
                 //deal with key:
                 $key_Ks = getKs($key);
 
-                //get 64 bit encrypted data:
-                $enc_data = Encrypt($data, $key_Ks);
-
-                //64 to dec and dec to hex:
-                $enc_dec_data = ArrayToDec($enc_data);
-                $enc_hex_data = DecToHex($enc_dec_data);
-                echo "<br />";
-                echo "result:<br />";
-                test($enc_hex_data);
+                if ($mode === "encrypt") {
+                    //get 64 bit encrypted data:
+                    $enc_data = Encrypt($data, $key_Ks);
+                    //64 to dec and dec to hex:
+                    $dec_enc_data = ArrayToDec($enc_data);
+                    $hex_enc_data = DecToHex($dec_enc_data);
+                    echo "<br />";
+                    echo "encription result:<br />";
+                    test($hex_enc_data, 1);
+                } elseif ($mode === "decrypt") {
+                    //get 64 bit decrypted data:
+                    $dec_data = Decrypt($data, $key_Ks);
+                    //64 to dec and dec to hex:
+                    $dec_dec_data = ArrayToDec($dec_data);
+                    $hex_dec_data = DecToHex($dec_dec_data);
+                    echo "<br />";
+                    echo "decription result:<br />";
+                    test($hex_dec_data, 1);
+                }
             }//end if
             ?>
         </div>
