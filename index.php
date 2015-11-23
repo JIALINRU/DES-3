@@ -380,6 +380,11 @@ function S_box(&$temp_B) {
     <head>
         <meta charset="UTF-8">
         <title>DES 加密和解密</title>
+        <style>
+            #CanNotSame{
+                color:red;
+            }
+        </style>
     </head>
     <body>
         <!--input-->
@@ -396,16 +401,40 @@ function S_box(&$temp_B) {
                     0x<input name="data[]" type="text" size="4" />
                 </lable>
                 <br />
-                <label>Input key:<br />
-                    0x<input name="key[]" type="text" size="4" />
-                    0x<input name="key[]" type="text" size="4" />
-                    0x<input name="key[]" type="text" size="4" />
-                    0x<input name="key[]" type="text" size="4" />
-                    0x<input name="key[]" type="text" size="4" />
-                    0x<input name="key[]" type="text" size="4" />
-                    0x<input name="key[]" type="text" size="4" />
-                    0x<input name="key[]" type="text" size="4" />
+                <label>Input key1:<br />
+                    0x<input name="key1[]" type="text" size="4" />
+                    0x<input name="key1[]" type="text" size="4" />
+                    0x<input name="key1[]" type="text" size="4" />
+                    0x<input name="key1[]" type="text" size="4" />
+                    0x<input name="key1[]" type="text" size="4" />
+                    0x<input name="key1[]" type="text" size="4" />
+                    0x<input name="key1[]" type="text" size="4" />
+                    0x<input name="key1[]" type="text" size="4" />
                 </label>
+                <br />
+                <label>Input key2:<br />
+                    0x<input name="key2[]" type="text" size="4" />
+                    0x<input name="key2[]" type="text" size="4" />
+                    0x<input name="key2[]" type="text" size="4" />
+                    0x<input name="key2[]" type="text" size="4" />
+                    0x<input name="key2[]" type="text" size="4" />
+                    0x<input name="key2[]" type="text" size="4" />
+                    0x<input name="key2[]" type="text" size="4" />
+                    0x<input name="key2[]" type="text" size="4" />
+                </label>
+                <span id="CanNotSame">*不能等于key1</span>
+                <br />
+                <label>Input key3:<br />
+                    0x<input name="key3[]" type="text" size="4" />
+                    0x<input name="key3[]" type="text" size="4" />
+                    0x<input name="key3[]" type="text" size="4" />
+                    0x<input name="key3[]" type="text" size="4" />
+                    0x<input name="key3[]" type="text" size="4" />
+                    0x<input name="key3[]" type="text" size="4" />
+                    0x<input name="key3[]" type="text" size="4" />
+                    0x<input name="key3[]" type="text" size="4" />
+                </label>
+                <input type="button" onclick="SameToKey1()" value="= key 1" />
                 <br />
                 <label><select name="mode">
                         <option value="encrypt">加密</option>
@@ -414,7 +443,8 @@ function S_box(&$temp_B) {
                 </label>
                 <br />
                 <input type="submit" value="提交" />
-            </form></div>
+            </form>
+        </div>
         <br />
         <!--result-->
         <div>
@@ -423,26 +453,47 @@ function S_box(&$temp_B) {
             $input_data = $input_key = [];
             if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $input_data = $_POST["data"];
-                $input_key = $_POST["key"];
+                $input_key1 = $_POST["key1"];
+                $input_key2 = $_POST["key2"];
+                $input_key3 = $_POST["key3"];
                 $mode = $_POST["mode"];
             }
-            if (count($input_data) !== 0 && count($input_key) !== 0) {
+            if (count($input_data) !== 0 && count($input_key1) !== 0) {
                 echo "input data:<br />";
                 test($input_data, 1);
-                echo "input key:<br />";
-                test($input_key, 1);
+                echo "input key1:<br />";
+                test($input_key1, 1);
+
                 //8*8 datas and 8*8 keys:
                 $bin_data = HexToBin($input_data);
-                $bin_key = HexToBin($input_key);
+                $bin_key1 = HexToBin($input_key1);
                 //get 64 long's array:
                 $data = BinToArray($bin_data);
-                $key = BinToArray($bin_key);
+                $key1 = BinToArray($bin_key1);
                 //deal with key:
-                $key_Ks = getKs($key);
+                $key_Ks1 = getKs($key1);
+                if (count($input_key2) != 0) {
+                    echo "input key2:<br />";
+                    test($input_key2, 1);
+                    $bin_key2 = HexToBin($input_key2);
+                    $key2 = BinToArray($bin_key2);
+                    $key_Ks2 = getKs($key2);
+                } else {
+                    $key_Ks2 = $key_Ks1;
+                }
+                if (count($input_key3) != 0) {
+                    echo "input key3:<br />";
+                    test($input_key3, 1);
+                    $bin_key3 = HexToBin($input_key3);
+                    $key3 = BinToArray($bin_key3);
+                    $key_Ks3 = getKs($key3);
+                } else {
+                    $key_Ks3 = $key_Ks1;
+                }
 
                 if ($mode === "encrypt") {
                     //get 64 bit encrypted data:
-                    $enc_data = Encrypt($data, $key_Ks);
+                    $enc_data = Encrypt(Decrypt(Encrypt($data, $key_Ks1), $key_Ks2), $key_Ks3);
                     //64 to dec and dec to hex:
                     $dec_enc_data = ArrayToDec($enc_data);
                     $hex_enc_data = DecToHex($dec_enc_data);
@@ -451,7 +502,7 @@ function S_box(&$temp_B) {
                     test($hex_enc_data, 1);
                 } elseif ($mode === "decrypt") {
                     //get 64 bit decrypted data:
-                    $dec_data = Decrypt($data, $key_Ks);
+                    $dec_data = Decrypt(Encrypt(Decrypt($data, $key_Ks1), $key_Ks2), $key_Ks3);
                     //64 to dec and dec to hex:
                     $dec_dec_data = ArrayToDec($dec_data);
                     $hex_dec_data = DecToHex($dec_dec_data);
@@ -463,4 +514,13 @@ function S_box(&$temp_B) {
             ?>
         </div>
     </body>
+    <script>
+        function SameToKey1() {
+            var key1 = document.getElementsByName("key1[]");
+            var key3 = document.getElementsByName("key3[]");
+            for (var i = 0; i < 8; i++) {
+                key3[i].value = key1[i].value;
+            }
+        }
+    </script>
 </html>
