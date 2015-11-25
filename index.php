@@ -391,48 +391,48 @@ function S_box(&$temp_B) {
         <div>
             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                 <lable>Input data:<br />
-                    0x<input name="data[]" type="text" size="4" value="a3" />
-                    0x<input name="data[]" type="text" size="4" value="63" />
-                    0x<input name="data[]" type="text" size="4" value="e3" />
-                    0x<input name="data[]" type="text" size="4" value="25" />
-                    0x<input name="data[]" type="text" size="4" value="fd" />
-                    0x<input name="data[]" type="text" size="4" value="88" />
-                    0x<input name="data[]" type="text" size="4" value="91" />
-                    0x<input name="data[]" type="text" size="4" value="15" />
+                    0x<input name="data[]" type="text" size="4" />
+                    0x<input name="data[]" type="text" size="4" />
+                    0x<input name="data[]" type="text" size="4" />
+                    0x<input name="data[]" type="text" size="4" />
+                    0x<input name="data[]" type="text" size="4" />
+                    0x<input name="data[]" type="text" size="4" />
+                    0x<input name="data[]" type="text" size="4" />
+                    0x<input name="data[]" type="text" size="4" />
                 </lable>
                 <br />
                 <label>Input key1:<br />
-                    0x<input name="key1[]" type="text" size="4" value="30" />
-                    0x<input name="key1[]" type="text" size="4" value="30"/>
-                    0x<input name="key1[]" type="text" size="4" value="30"/>
-                    0x<input name="key1[]" type="text" size="4" value="30"/>
-                    0x<input name="key1[]" type="text" size="4" value="30"/>
-                    0x<input name="key1[]" type="text" size="4" value="30"/>
-                    0x<input name="key1[]" type="text" size="4" value="30"/>
-                    0x<input name="key1[]" type="text" size="4" value="30"/>
+                    0x<input name="key1[]" type="text" size="4" />
+                    0x<input name="key1[]" type="text" size="4" />
+                    0x<input name="key1[]" type="text" size="4" />
+                    0x<input name="key1[]" type="text" size="4" />
+                    0x<input name="key1[]" type="text" size="4" />
+                    0x<input name="key1[]" type="text" size="4" />
+                    0x<input name="key1[]" type="text" size="4" />
+                    0x<input name="key1[]" type="text" size="4" />
                 </label>
                 <br />
                 <label>Input key2:<br />
-                    0x<input name="key2[]" type="text" size="4" value="22" />
-                    0x<input name="key2[]" type="text" size="4" value="22" />
-                    0x<input name="key2[]" type="text" size="4" value="22" />
-                    0x<input name="key2[]" type="text" size="4" value="22" />
-                    0x<input name="key2[]" type="text" size="4" value="22" />
-                    0x<input name="key2[]" type="text" size="4" value="22" />
-                    0x<input name="key2[]" type="text" size="4" value="22" />
-                    0x<input name="key2[]" type="text" size="4" value="22" />
+                    0x<input name="key2[]" type="text" size="4" />
+                    0x<input name="key2[]" type="text" size="4" />
+                    0x<input name="key2[]" type="text" size="4" />
+                    0x<input name="key2[]" type="text" size="4" />
+                    0x<input name="key2[]" type="text" size="4" />
+                    0x<input name="key2[]" type="text" size="4" />
+                    0x<input name="key2[]" type="text" size="4" />
+                    0x<input name="key2[]" type="text" size="4" />
                 </label>
                 <span id="CanNotSame">*不能等于key1</span>
                 <br />
                 <label>Input key3:<br />
-                    0x<input name="key3[]" type="text" size="4" value="cc" />
-                    0x<input name="key3[]" type="text" size="4" value="cc" />
-                    0x<input name="key3[]" type="text" size="4" value="cc" />
-                    0x<input name="key3[]" type="text" size="4" value="cc" />
-                    0x<input name="key3[]" type="text" size="4" value="cc" />
-                    0x<input name="key3[]" type="text" size="4" value="cc" />
-                    0x<input name="key3[]" type="text" size="4" value="cc" />
-                    0x<input name="key3[]" type="text" size="4" value="cc" />
+                    0x<input name="key3[]" type="text" size="4" />
+                    0x<input name="key3[]" type="text" size="4" />
+                    0x<input name="key3[]" type="text" size="4" />
+                    0x<input name="key3[]" type="text" size="4" />
+                    0x<input name="key3[]" type="text" size="4" />
+                    0x<input name="key3[]" type="text" size="4" />
+                    0x<input name="key3[]" type="text" size="4" />
+                    0x<input name="key3[]" type="text" size="4" />
                 </label>
                 <input type="button" onclick="SameToKey1()" value="= key 1" />
                 <br />
