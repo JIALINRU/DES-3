@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!--DES enc&dec by PHP-->
 <?php
 include 'test.php';
 //init tables
